@@ -3,12 +3,16 @@ const height = 300;
 const pointNumber = 10;
 const lineWidth = 10;
 
-const init = () => {
+const init = () => {    
   const canvas = document.createElement("canvas");
   document.body.appendChild(canvas);
   const ctx = canvas.getContext("2d");
   canvas.width = width;
   canvas.height = height;
+  
+  const message = document.createElement("span");
+  document.body.appendChild(message);
+//   message.innerHTML = "<br>test";
   
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, width, height);
@@ -48,6 +52,29 @@ const init = () => {
   ctx.arc(lastX, lastY, lineWidth / 2 * 1.5, 0, Math.PI * 2);
   ctx.fillStyle = "#0ff";
   ctx.fill();
+  
+  // タイマーの描写
+  let isInGame = false;
+  let isGameOver = false;
+  canvas.onpointermove = (e) => {
+    const x = e.offsetX;
+    const y = e.offsetY;
+    const data = ctx.getImageData(x, y, 1, 1).data;
+    if (!isInGame) {
+        if (data[0] === 252 && data[1] === 0 && data[2] === 0) {
+            isInGame = true;
+            const startTime = Date.now();
+            const tick = () => {
+                requestAnimation(tick);
+                if (!isGameOver) {
+                  const elaspedTime = Date.now() - startTime;
+                  message.innerHTML = `<br>${(elaspedTime /1000).toFixed(3)}`   
+                }
+            }
+            tick();
+        }
+    }
+  }
 }
 
 window.onload = () => {
