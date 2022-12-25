@@ -1,7 +1,7 @@
 const width = 300;
 const height = 300;
 const pointNumber = 10;
-const lineWidth = 10;
+const lineWidth = 13;
 
 const init = () => {    
   const canvas = document.createElement("canvas");
@@ -56,26 +56,49 @@ const init = () => {
   // タイマーの描写
   let isInGame = false;
   let isGameOver = false;
+  let heroX, heroY;
   canvas.onpointermove = (e) => {
     const x = e.offsetX;
     const y = e.offsetY;
     const data = ctx.getImageData(x, y, 1, 1).data;
     if (!isInGame) {
-        if (data[0] === 252 && data[1] === 0 && data[2] === 0) {
-            isInGame = true;
-            const startTime = Date.now();
-            const tick = () => {
-                requestAnimation(tick);
-                if (!isGameOver) {
-                  const elaspedTime = Date.now() - startTime;
-                  message.innerHTML = `<br>${(elaspedTime /1000).toFixed(3)}`   
-                }
-            }
-            tick();
-        }
+      if (data[0] === 255 && data[1] === 0 && data[2] === 0) {
+        isInGame = true;
+        const startTime = Date.now();
+        const tick = () => {
+          requestAnimationFrame(tick);
+          if (!isGameOver) {
+            const elaspedTime = Date.now() - startTime;
+            message.innerHTML = `<br>${(elaspedTime /1000).toFixed(3)}`   
+          }
+        };
+        tick();
+      }
     }
-  }
-}
+    if (isInGame && !isGameOver) {
+      heroX = x;
+      heroY = y;
+      if (data[2] !== 0) {
+        isGameOver = true; // クリア
+      } else if (data[0] !== 255) {
+        gameOver();
+      }
+    }
+  };
+  
+  // gameOver判定
+  const gameOver = async () => {
+    isGameOver = true;
+    ctx.strokeStyle = "#f00";
+    ctx.lineWidth = 1;
+    for (let i = 0; i < width / 10; i++) {
+      ctx.beginPath();
+      ctx.arc(heroX, heroY, i, 0, Math.PI * 2);
+      ctx.stroke();
+      await new Promise((r) => setTimeout(r, 50));
+    }
+  };
+};
 
 window.onload = () => {
   init();
