@@ -19,6 +19,9 @@ const init = () => {
   let lastY = (Math.random() * 0.5 + 0.25) * height;
   let lastCpy = lastY + (Math.random() * 2 - 1) * 0.25
 
+  const startX = lastX;
+  const startY = lastY;
+
   ctx.moveTo(lastX, lastY);
   for (let i = 0; i < pointNumber; i++) {
       let cp1x = lastX + interval / 3;
@@ -35,6 +38,16 @@ const init = () => {
   ctx.strokeStyle = "#ff0";
   ctx.lineWidth = lineWidth;
   ctx.stroke();
+  
+  ctx.beginPath();
+  ctx.arc(startX, startY, lineWidth / 2 * 1.5, 0, Math.PI * 2);
+  ctx.fillStyle = "#f00";
+  ctx.fill();
+  
+  ctx.beginPath();
+  ctx.arc(lastX, lastY, lineWidth / 2 * 1.5, 0, Math.PI * 2);
+  ctx.fillStyle = "#0ff";
+  ctx.fill();
 }
 
 window.onload = () => {
